@@ -25,12 +25,12 @@ def clean_data(df: pl.DataFrame) -> pl.DataFrame:
             pl.col("download_count") > 0
         )
         .with_columns(
-            pl.col('title').str.strip_chars().str.replace(r'[;:].*$', ''),
-            pl.col('summary').str.strip_chars().str.to_lowercase(),
-            pl.col('languages').str.strip_chars().replace(LANGUAGES),
+            pl.col('title').str.replace(r'[;:].*$', '').str.strip_chars(),
+            pl.col('summary').str.strip_chars().str.replace('(This is an automatically generated summary.)', '' , literal=True).str.to_lowercase(),
+            pl.col('languages').replace(LANGUAGES).alias('language').str.strip_chars().str.to_lowercase(),
             pl.col('author_name').str.strip_chars().str.split(', ').list.reverse().list.join(' '),
         )
-        .select('id' , 'title' , 'author_name' , 'languages' , 'download_count' , 'summary')
+        .select('id' , 'title' , 'author_name' , 'language' , 'download_count' , 'summary')
         .sort('download_count' , descending=True)
     )
     return clean_df

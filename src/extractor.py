@@ -2,9 +2,10 @@ import requests
 import json
 import polars as pl
 
-def extract_data(url = 'https://gutendex.com/books'): 
+def extract_data(url : str = 'https://gutendex.com/books') -> pl.DataFrame: 
     """"
-    this function extracts data from the given URL and returns it as a Polars DataFrame.
+    this function extracts data from the given URL and returns it with the wanted keys as a Polars DataFrame
+    those keys are: id, title, summary, language, download_count, and author_name.
     """
     books = []
 
@@ -12,7 +13,9 @@ def extract_data(url = 'https://gutendex.com/books'):
         response = requests.get(url, params={'page': page})
         response.raise_for_status()  # Raise an error for bad responses
         data = response.json()
-        books.extend(data['results'])
+        books += data['results']
+        if data['next'] is None:
+            break
 
     return pl.DataFrame(books , infer_schema_length=None).select([
         pl.col('id'),
