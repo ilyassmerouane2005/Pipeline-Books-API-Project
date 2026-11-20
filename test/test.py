@@ -35,6 +35,7 @@ def get_fake(*args , **kwargs):
 @patch('src.extractor.requests.get' , new=get_fake)
 
 def test_extract_data():
+
     df = extract_data()
     assert isinstance(df , pl.DataFrame)
     assert df.shape[0] == 2

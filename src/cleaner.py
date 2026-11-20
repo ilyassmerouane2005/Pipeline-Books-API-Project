@@ -27,7 +27,7 @@ def clean_data(df: pl.DataFrame) -> pl.DataFrame:
         .with_columns(
             pl.col('title').str.replace(r'[;:].*$', '').str.strip_chars(),
             pl.col('summary').str.strip_chars().str.replace('(This is an automatically generated summary.)', '' , literal=True).str.to_lowercase(),
-            pl.col('languages').replace(LANGUAGES).alias('language').str.strip_chars().str.to_lowercase(),
+            pl.col('languages').replace(LANGUAGES).str.strip_chars().str.to_lowercase().alias('language'),
             pl.col('author_name').str.strip_chars().str.split(', ').list.reverse().list.join(' '),
         )
         .select('id' , 'title' , 'author_name' , 'language' , 'download_count' , 'summary')
